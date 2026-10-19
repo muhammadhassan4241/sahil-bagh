@@ -21,7 +21,7 @@ export const mockProperties = [
       'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
       'https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?w=800',
     ],
-    owner: { full_name: 'Ahmed Raza', whatsapp: '+923001234567' },
+    owner: { full_name: 'Ahmed Raza', whatsapp: '+923282946313' },
   },
   {
     id: 'demo-2',
@@ -44,7 +44,7 @@ export const mockProperties = [
       'https://images.unsplash.com/photo-1615529182904-14819c35db37?w=800',
       'https://images.unsplash.com/photo-1499796683658-b659bc751db1?w=800',
     ],
-    owner: { full_name: 'Sana Malik', whatsapp: '+923011234567' },
+    owner: { full_name: 'Sana Malik', whatsapp: '+923282946313' },
   },
   {
     id: 'demo-3',
@@ -67,7 +67,7 @@ export const mockProperties = [
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
       'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800',
     ],
-    owner: { full_name: 'Bilal Farms', whatsapp: '+923021234567' },
+    owner: { full_name: 'Bilal Farms', whatsapp: '+923282946313' },
   },
   {
     id: 'demo-4',
@@ -90,7 +90,7 @@ export const mockProperties = [
       'https://images.unsplash.com/photo-1601918774946-25832a4be0d6?w=800',
       'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800',
     ],
-    owner: { full_name: 'Kamran Aslam', whatsapp: '+923031234567' },
+    owner: { full_name: 'Kamran Aslam', whatsapp: '+923282946313' },
   },
   {
     id: 'demo-5',
@@ -112,7 +112,7 @@ export const mockProperties = [
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
       'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800',
     ],
-    owner: { full_name: 'Zara Sheikh', whatsapp: '+923041234567' },
+    owner: { full_name: 'Zara Sheikh', whatsapp: '+923282946313' },
   },
   {
     id: 'demo-6',
@@ -135,7 +135,7 @@ export const mockProperties = [
       'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
       'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
     ],
-    owner: { full_name: 'Royal Estates', whatsapp: '+923051234567' },
+    owner: { full_name: 'Royal Estates', whatsapp: '+923282946313' },
   },
 ]
 
@@ -148,3 +148,34 @@ export const mockReviews = {
     { id: 'r3', customer_name: 'Ayesha R.', rating: 5, comment: 'Perfect venue for our birthday party! The pool and lawn were both well maintained.', created_at: '2026-06-02' },
   ],
 }
+
+export const mockBookings = [
+  {
+    id: 'demo-booking-1',
+    property_id: 'demo-1',
+    customer_id: 'demo-customer',
+    check_in: '2026-11-05',
+    check_out: '2026-11-07',
+    guests: 4,
+    total_price: 37800,
+    commission_amount: 1800,
+    status: 'confirmed',
+    customer_notes: 'Family gathering with BBQ requested',
+    created_at: '2026-10-15T10:00:00Z',
+    properties: mockProperties[0],
+  },
+  {
+    id: 'demo-booking-2',
+    property_id: 'demo-2',
+    customer_id: 'demo-customer',
+    check_in: '2026-11-12',
+    check_out: '2026-11-14',
+    guests: 6,
+    total_price: 67200,
+    commission_amount: 3200,
+    status: 'pending',
+    customer_notes: 'Late check-in around 8 PM',
+    created_at: '2026-10-18T14:30:00Z',
+    properties: mockProperties[1],
+  },
+]

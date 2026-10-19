@@ -112,16 +112,28 @@ export default function Login() {
 
         <div className="mt-5 border-t border-border pt-4 text-center">
           <p className="text-xs text-ink-500">Want to test the platform right away?</p>
-          <button
-            type="button"
-            onClick={() => {
-              demoLogin('owner', 'Demo Owner')
-              navigate('/dashboard')
-            }}
-            className="mt-2 inline-flex items-center rounded-lg border border-border bg-sand-100/80 px-3 py-1.5 text-xs font-semibold text-teal-800 transition hover:bg-sand-200"
-          >
-            Sign in as Demo Owner &rarr;
-          </button>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                demoLogin('customer', 'Demo Customer')
+                navigate('/my-bookings')
+              }}
+              className="inline-flex items-center rounded-lg border border-border bg-sand-100/80 px-3 py-1.5 text-xs font-semibold text-teal-800 transition hover:bg-sand-200"
+            >
+              Sign in as Demo Customer &rarr;
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                demoLogin('owner', 'Demo Owner')
+                navigate('/dashboard')
+              }}
+              className="inline-flex items-center rounded-lg border border-border bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-900 transition hover:bg-teal-100"
+            >
+              Sign in as Demo Owner &rarr;
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -61,8 +61,14 @@ export default function Home() {
   }, [])
 
   function handleSearch(filters) {
-    const params = new URLSearchParams(filters)
-    navigate(`/listings?${params.toString()}`)
+    const params = new URLSearchParams()
+    Object.entries(filters || {}).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        params.set(k, String(v))
+      }
+    })
+    const qs = params.toString()
+    navigate(qs ? `/listings?${qs}` : '/listings')
   }
 
   return (

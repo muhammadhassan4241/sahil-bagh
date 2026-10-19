@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, MapPin, Users, Waves } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -9,12 +9,18 @@ export function SearchFilters({ initial = {}, onSearch, floating = false }) {
   const [type, setType] = useState(initial.type || 'all')
   const [guests, setGuests] = useState(initial.guests || '')
 
+  useEffect(() => {
+    setLocation(initial.location || '')
+    setType(initial.type || 'all')
+    setGuests(initial.guests || '')
+  }, [initial.location, initial.type, initial.guests])
+
   function handleSubmit(e) {
     e.preventDefault()
     onSearch({
-      location: location || undefined,
+      location: location ? location.trim() : undefined,
       type: type === 'all' ? undefined : type,
-      guests: guests ? Number(guests) : undefined,
+      guests: guests && Number(guests) > 0 ? Number(guests) : undefined,
     })
   }
 

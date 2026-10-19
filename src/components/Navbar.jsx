@@ -4,19 +4,23 @@ import { Menu, X, Waves, UserCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/AuthContext'
 
-const links = [
-  { to: '/listings', label: 'Beach Huts', filter: 'beach_hut' },
-  { to: '/listings', label: 'Farmhouses', filter: 'farmhouse' },
-  { to: '/how-it-works', label: 'How It Works' },
-  { to: '/about', label: 'About' },
-  { to: '/contact', label: 'Contact' },
-  { to: '/dashboard', label: 'Owner Dashboard' },
-]
-
 export function Navbar() {
   const [open, setOpen] = useState(false)
   const { user, profile, signOut } = useAuth()
   const navigate = useNavigate()
+
+  const isCustomer = profile?.role === 'customer'
+
+  const navLinks = [
+    { to: '/listings', label: 'Beach Huts', filter: 'beach_hut' },
+    { to: '/listings', label: 'Farmhouses', filter: 'farmhouse' },
+    { to: '/how-it-works', label: 'How It Works' },
+    { to: '/about', label: 'About' },
+    { to: '/contact', label: 'Contact' },
+    isCustomer
+      ? { to: '/my-bookings', label: 'My Bookings' }
+      : { to: '/dashboard', label: 'Owner Dashboard' },
+  ]
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-sand-50/90 backdrop-blur-md">
@@ -27,7 +31,7 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
-          {links.map((l) => (
+          {navLinks.map((l) => (
             <NavLink
               key={l.label}
               to={l.filter ? `${l.to}?type=${l.filter}` : l.to}
@@ -41,10 +45,13 @@ export function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           {user ? (
             <>
-              <span className="flex items-center gap-1.5 text-sm text-ink-700">
+              <Link
+                to={isCustomer ? '/my-bookings' : '/dashboard'}
+                className="flex items-center gap-1.5 text-sm font-medium text-ink-700 hover:text-teal-700"
+              >
                 <UserCircle2 className="h-5 w-5 text-teal-600" />
                 {profile?.full_name || 'Account'}
-              </span>
+              </Link>
               <Button variant="ghost" size="sm" onClick={() => signOut()}>
                 Logout
               </Button>
@@ -69,7 +76,7 @@ export function Navbar() {
       {open && (
         <div className="border-t border-border bg-sand-50 px-4 py-4 md:hidden">
           <div className="flex flex-col gap-4">
-            {links.map((l) => (
+            {navLinks.map((l) => (
               <NavLink
                 key={l.label}
                 to={l.filter ? `${l.to}?type=${l.filter}` : l.to}

@@ -16,6 +16,11 @@ export default function Listings() {
   const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '')
   const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '')
 
+  useEffect(() => {
+    setMinPrice(searchParams.get('minPrice') || '')
+    setMaxPrice(searchParams.get('maxPrice') || '')
+  }, [searchParams])
+
   const filters = {
     location: searchParams.get('location') || undefined,
     type: searchParams.get('type') || undefined,
@@ -31,7 +36,7 @@ export default function Listings() {
         let sorted = [...(data || [])]
         if (sort === 'price_low') sorted.sort((a, b) => a.price_per_night - b.price_per_night)
         if (sort === 'price_high') sorted.sort((a, b) => b.price_per_night - a.price_per_night)
-        if (sort === 'rating') sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        if (sort === 'rating') sorted.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
         setProperties(sorted)
       })
       .catch((err) => {
@@ -44,16 +49,25 @@ export default function Listings() {
 
   function handleSearch(newFilters) {
     const params = {}
-    Object.entries(newFilters).forEach(([k, v]) => { if (v) params[k] = v })
-    if (minPrice) params.minPrice = minPrice
-    if (maxPrice) params.maxPrice = maxPrice
+    Object.entries(newFilters).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') params[k] = v
+    })
+    if (minPrice && Number(minPrice) >= 0) params.minPrice = minPrice
+    if (maxPrice && Number(maxPrice) >= 0) params.maxPrice = maxPrice
     setSearchParams(params)
   }
 
   function applyPriceRange() {
     const params = Object.fromEntries(searchParams)
-    if (minPrice) params.minPrice = minPrice; else delete params.minPrice
-    if (maxPrice) params.maxPrice = maxPrice; else delete params.maxPrice
+    const minVal = minPrice ? Number(minPrice) : null
+    const maxVal = maxPrice ? Number(maxPrice) : null
+
+    if (minVal !== null && minVal >= 0) params.minPrice = String(minVal)
+    else delete params.minPrice
+
+    if (maxVal !== null && maxVal >= 0) params.maxPrice = String(maxVal)
+    else delete params.maxPrice
+
     setSearchParams(params)
   }
 

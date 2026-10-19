@@ -47,7 +47,7 @@ export function Footer() {
             <div className="flex gap-3">
               <a href="#" className="rounded-full bg-white/10 p-2 hover:bg-white/20"><AtSign className="h-4 w-4" /></a>
               <a href="#" className="rounded-full bg-white/10 p-2 hover:bg-white/20"><Share2 className="h-4 w-4" /></a>
-              <a href="mailto:hello@sahilbagh.pk" className="rounded-full bg-white/10 p-2 hover:bg-white/20"><Mail className="h-4 w-4" /></a>
+              <a href="mailto:muhammadateeqraza123@gmail.com" className="rounded-full bg-white/10 p-2 hover:bg-white/20"><Mail className="h-4 w-4" /></a>
             </div>
           </div>
         </div>

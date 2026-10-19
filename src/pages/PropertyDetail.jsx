@@ -37,7 +37,15 @@ export default function PropertyDetail() {
     )
   }
 
-  const gallery = property.gallery || property.property_images?.map((i) => i.image_url) || [property.cover_image]
+  const imagesFromDb = property.property_images?.map((i) => i.image_url).filter(Boolean)
+  const gallery =
+    property.gallery && property.gallery.length > 0
+      ? property.gallery
+      : imagesFromDb && imagesFromDb.length > 0
+      ? imagesFromDb
+      : property.cover_image
+      ? [property.cover_image]
+      : []
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { CalendarDays, Users, Loader2, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,16 +12,44 @@ import { WhatsAppButton } from '@/components/WhatsAppButton'
 
 function nightsBetween(inDate, outDate) {
   if (!inDate || !outDate) return 0
-  const diff = (new Date(outDate) - new Date(inDate)) / (1000 * 60 * 60 * 24)
+  const d1 = new Date(inDate)
+  const d2 = new Date(outDate)
+  if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return 0
+  const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24))
   return diff > 0 ? diff : 0
 }
 
 function rangesOverlap(aStart, aEnd, bStart, bEnd) {
-  return new Date(aStart) < new Date(bEnd) && new Date(bStart) < new Date(aEnd)
+  if (!aStart || !aEnd || !bStart || !bEnd) return false
+  const aS = new Date(aStart).getTime()
+  const aE = new Date(aEnd).getTime()
+  const bS = new Date(bStart).getTime()
+  const bE = new Date(bEnd).getTime()
+  if (isNaN(aS) || isNaN(aE) || isNaN(bS) || isNaN(bE)) return false
+  return aS < bE && bS < aE
+}
+
+function getTodayDateString() {
+  const d = new Date()
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function formatDateShort(d) {
+  if (!d) return ''
+  if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
+    const [year, month, day] = d.split('-').map(Number)
+    return new Date(year, month - 1, day).toLocaleDateString('en-PK', { day: 'numeric', month: 'short' })
+  }
+  const date = new Date(d)
+  if (isNaN(date.getTime())) return ''
+  return date.toLocaleDateString('en-PK', { day: 'numeric', month: 'short' })
 }
 
 export function BookingWidget({ property }) {
-  const { user } = useAuth()
+  const { user, isSupabaseConfigured } = useAuth()
   const [checkIn, setCheckIn] = useState('')
   const [checkOut, setCheckOut] = useState('')
   const [guests, setGuests] = useState(2)
@@ -29,6 +58,8 @@ export function BookingWidget({ property }) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(null)
+
+  const todayStr = useMemo(() => getTodayDateString(), [])
 
   useEffect(() => {
     fetchBookedRanges(property.id).then(setBookedRanges).catch(() => {})
@@ -44,6 +75,13 @@ export function BookingWidget({ property }) {
     return bookedRanges.some((r) => rangesOverlap(checkIn, checkOut, r.check_in, r.check_out))
   }, [checkIn, checkOut, bookedRanges])
 
+  function handleCheckInChange(val) {
+    setCheckIn(val)
+    if (checkOut && val && checkOut <= val) {
+      setCheckOut('')
+    }
+  }
+
   async function handleBook(e) {
     e.preventDefault()
     setError('')
@@ -56,8 +94,16 @@ export function BookingWidget({ property }) {
       setError('These dates are already booked. Please choose different dates.')
       return
     }
-    if (guests > property.capacity) {
+    if (!guests || Number(guests) < 1) {
+      setError('Please specify at least 1 guest.')
+      return
+    }
+    if (property.capacity && Number(guests) > property.capacity) {
       setError(`This property accommodates a maximum of ${property.capacity} guests.`)
+      return
+    }
+    if (!user && isSupabaseConfigured) {
+      setError('Please log in or create an account to request a booking.')
       return
     }
 
@@ -72,7 +118,7 @@ export function BookingWidget({ property }) {
         total_price: total,
         commission_amount: serviceFee,
         status: 'pending',
-        customer_notes: notes || null,
+        customer_notes: notes ? notes.trim() : null,
       })
       setSuccess(booking)
     } catch (err) {
@@ -93,11 +139,17 @@ export function BookingWidget({ property }) {
         <p className="mt-3 text-sm text-ink-700">
           You will receive an update once the owner confirms. For faster coordination, contact the owner directly via WhatsApp.
         </p>
-        <div className="mt-4 flex justify-center">
+        <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
           <WhatsAppButton
-            phone={property.owner?.whatsapp}
+            phone={property.owner?.whatsapp || property.profiles?.whatsapp}
             message={`Hello, I have requested a booking for ${property.title} (${checkIn} to ${checkOut}). Please confirm.`}
           />
+          <Link
+            to="/my-bookings"
+            className="inline-flex items-center gap-1.5 rounded-full border border-teal-700 bg-white/80 px-4 py-2.5 text-xs font-semibold text-teal-800 transition hover:bg-white"
+          >
+            Track in My Bookings &rarr;
+          </Link>
         </div>
       </div>
     )
@@ -113,11 +165,11 @@ export function BookingWidget({ property }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label htmlFor="checkin"><CalendarDays className="mb-1 inline h-3.5 w-3.5" /> Check-in</Label>
-          <Input id="checkin" type="date" value={checkIn} min={new Date().toISOString().split('T')[0]} onChange={(e) => setCheckIn(e.target.value)} required />
+          <Input id="checkin" type="date" value={checkIn} min={todayStr} onChange={(e) => handleCheckInChange(e.target.value)} required />
         </div>
         <div>
           <Label htmlFor="checkout"><CalendarDays className="mb-1 inline h-3.5 w-3.5" /> Check-out</Label>
-          <Input id="checkout" type="date" value={checkOut} min={checkIn || new Date().toISOString().split('T')[0]} onChange={(e) => setCheckOut(e.target.value)} required />
+          <Input id="checkout" type="date" value={checkOut} min={checkIn || todayStr} onChange={(e) => setCheckOut(e.target.value)} required />
         </div>
       </div>
 
@@ -165,8 +217,4 @@ export function BookingWidget({ property }) {
       <p className="mt-2 text-center text-xs text-ink-500">No payment charged now — the owner will confirm your reservation.</p>
     </form>
   )
-}
-
-function formatDateShort(d) {
-  return new Date(d).toLocaleDateString('en-PK', { day: 'numeric', month: 'short' })
 }

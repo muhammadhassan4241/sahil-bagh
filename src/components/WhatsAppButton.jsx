@@ -1,8 +1,18 @@
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle } from "lucide-react";
 
-export function WhatsAppButton({ phone, message, label = 'Inquire via WhatsApp', className = '' }) {
-  const cleanPhone = (phone || '').replace(/[^\d+]/g, '')
-  const url = `https://wa.me/${cleanPhone.replace('+', '')}?text=${encodeURIComponent(message || 'Hello, I would like to inquire about this property.')}`
+const DEFAULT_WHATSAPP_PHONE = "923282946313";
+
+export function WhatsAppButton({
+  phone,
+  message,
+  label = "Inquire via WhatsApp",
+  className = "",
+}) {
+  const cleanPhone = phone ? String(phone).replace(/[^\d+]/g, "").replace(/^\+/, "") : "";
+  const targetPhone = cleanPhone || DEFAULT_WHATSAPP_PHONE;
+  const url = `https://wa.me/${targetPhone}?text=${encodeURIComponent(
+    message || "Hello, I would like to inquire about this property."
+  )}`;
 
   return (
     <a
@@ -14,5 +24,5 @@ export function WhatsAppButton({ phone, message, label = 'Inquire via WhatsApp',
       <MessageCircle className="h-4 w-4" />
       {label}
     </a>
-  )
+  );
 }

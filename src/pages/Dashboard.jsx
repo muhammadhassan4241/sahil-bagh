@@ -43,10 +43,10 @@ function AddPropertyForm({ ownerId, onCreated }) {
       await createProperty({
         ...form,
         owner_id: ownerId,
-        price_per_night: Number(form.price_per_night),
-        capacity: Number(form.capacity),
-        bedrooms: Number(form.bedrooms),
-        bathrooms: Number(form.bathrooms),
+        price_per_night: Number(form.price_per_night) || 0,
+        capacity: Number(form.capacity) || 1,
+        bedrooms: Number(form.bedrooms) || 1,
+        bathrooms: Number(form.bathrooms) || 1,
         status: 'active',
       })
       setOk(true)
@@ -131,24 +131,30 @@ export default function Dashboard() {
   const ownerId = user?.id || 'demo-owner'
 
   useEffect(() => {
+    setLoading(true)
     Promise.all([fetchOwnerProperties(ownerId), fetchOwnerBookings(ownerId)])
       .then(([props, bks]) => {
         setProperties(props || [])
         setBookings(bks || [])
       })
+      .catch((err) => {
+        console.error('Failed to load dashboard data:', err)
+      })
       .finally(() => setLoading(false))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [ownerId])
 
   async function handleStatusChange(bookingId, status) {
-    await updateBookingStatus(bookingId, status)
-    setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, status } : b)))
+    try {
+      await updateBookingStatus(bookingId, status)
+      setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, status } : b)))
+    } catch (err) {
+      console.error('Failed to update booking status:', err)
+    }
   }
 
-  const totalRevenue = properties.reduce((sum, p) => {
-    const confirmed = (p.bookings || []).filter((b) => b.status === 'confirmed')
-    return sum + confirmed.reduce((s, b) => s + Number(b.total_price || 0), 0)
-  }, 0)
+  const totalRevenue = bookings
+    .filter((b) => b.status === 'confirmed')
+    .reduce((sum, b) => sum + Number(b.total_price || 0), 0)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">

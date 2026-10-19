@@ -10,6 +10,7 @@ import About from '@/pages/About'
 import HowItWorks from '@/pages/HowItWorks'
 import Contact from '@/pages/Contact'
 import Dashboard from '@/pages/Dashboard'
+import MyBookings from '@/pages/MyBookings'
 import NotFound from '@/pages/NotFound'
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

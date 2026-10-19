@@ -150,16 +150,18 @@ function extractErrorMessage(error, context = 'signup') {
     if (error) throw new Error(extractErrorMessage(error, 'signup'))
   }
 
-  function demoLogin(role = 'owner', fullName = 'Demo Owner') {
+  function demoLogin(role = 'owner', fullName = 'Demo User') {
+    const defaultName = fullName && fullName !== 'Demo User' ? fullName : role === 'owner' ? 'Demo Owner' : 'Demo Customer'
+    const demoId = role === 'owner' ? 'demo-owner' : 'demo-customer'
     const demoUser = {
-      id: 'demo-owner',
+      id: demoId,
       email: `${role}@demo.com`,
-      user_metadata: { full_name: fullName, role },
+      user_metadata: { full_name: defaultName, role },
     }
     setUser(demoUser)
     setProfile({
-      id: 'demo-owner',
-      full_name: fullName,
+      id: demoId,
+      full_name: defaultName,
       role,
     })
   }
